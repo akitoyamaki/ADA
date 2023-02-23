@@ -1,0 +1,201 @@
+---
+title: "practice"
+output: html_document
+date: "2023-02-16"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Set up
+
+```{r}
+install.packages("knitr")
+install.packages("factoextra")
+install.packages("cluster")
+install.packages("dplyr")
+install.packages("plyr")
+install.packages("psych")
+install.packages("psychTools")
+install.packages("readxl")
+install.packages("stringr")
+
+library(factoextra)
+library(cluster)
+library(dplyr)
+library(plyr)
+library(psych)
+library(psychTools)
+library(readxl)
+library(stringr)
+```
+
+# Load data
+
+```{r}
+loan <- read_excel("loan_data_ADA_assignment.xlsx")
+```
+
+# Looking at the Data, and Basic Analysis
+
+```{r}
+describe(loan)
+```
+
+```{r}
+headTail(loan)
+```
+
+```{r}
+summary(loan)
+```
+
+# Clean the data
+
+```{r}
+loan[ , c("id", "member_id", "grade", "emp_title", "issue_d", "pymnt_plan", "desc", "purpose", "title", "zip_code", "addr_state", "earliest_cr_line", "last_pymnt_d", "next_pymnt_d", "last_credit_pull_d", "policy_code") ] <- list(NULL)
+
+summary(loan)
+```
+
+# Change the score from character to numeric
+
+```{r}
+index_36 <- which(loan$term == "36")
+loan$term[index_36] = "0"
+
+index_60 <- which(loan$term == "60")
+loan$term[index_36] = "1"
+
+loan$sub_grade <- revalue(loan$sub_grade, c(
+  "A1" = "35",
+  "A2" = "34",
+  "A3" = "33",
+  "A4" = "32",
+  "A5" = "31",
+  "B1" = "30",
+  "B2" = "29",
+  "B3" = "28",
+  "B4" = "27",
+  "B5" = "26",
+  "C1" = "25",
+  "C2" = "24",
+  "C3" = "23",
+  "C4" = "22",
+  "C5" = "21",
+  "D1" = "20",
+  "D2" = "19",
+  "D3" = "18",
+  "D4" = "17",
+  "D5" = "16", 
+  "E1" = "15",
+  "E2" = "14",
+  "E3" = "13",
+  "E4" = "12",
+  "E5" = "11",
+  "F1" = "10",
+  "F2" = "9",
+  "F3" = "8",
+  "F4" = "7",
+  "F5" = "6",
+  "G1" = "5",
+  "G2" = "4",
+  "G3" = "3",
+  "G4" = "2",
+  "G5" = "1"
+  ))
+
+loan$home_ownership <- revalue(loan$home_ownership, c("OWN" = "5", "MORTGAGE" = "4", "RENT" = "3", "OTHER" = "2", "NONE" = "1"))
+
+loan$verification_status <- revalue(loan$verification_status, c("Verified" = "3", "Source Verified" = "2", "Not Verified" = "1"))
+
+loan$loan_status <- revalue(loan$loan_status, c("Fully Paid" = "7", "Current" = "6", "Late (16-30 days)" = "5", "Late (31-120 days)" = "4", "In Grace Period" = "3", "Default" = "2", "Charged Off" = "1"))
+
+loan$loan_is_bad <- as.factor(loan$loan_is_bad)
+loan$loan_is_bad <- revalue(loan$loan_is_bad, c("TRUE" = "1", "FALSE" = "0"))
+
+columns <- c("term", "sub_grade", "home_ownership", "verification_status", "loan_status", "loan_is_bad")
+loan[columns] <- lapply(loan[columns], as.numeric)
+
+str(loan)
+summary(loan)
+```
+
+
+
+
+
+# Appendix
+
+```{r}
+
+
+
+loan <- loan %>% mutate(term = str_replace(term, "1", "60"))
+
+loan <- loan %>% mutate(term = )
+str_replace(term, "0", "36")
+
+loan$sub_grade -plyr::revalue(as.character(loan$sub_grade), c(
+  "A1" = "35",
+  "A2" = "34",
+  "A3" = "33",
+  "A4" = "32",
+  "A5" = "31",
+  "B1" = "30",
+  "B2" = "29",
+  "B3" = "28",
+  "B4" = "27",
+  "B5" = "26",
+  "C1" = "25",
+  "C2" = "24",
+  "C3" = "23",
+  "C4" = "22",
+  "C5" = "21",
+  "D1" = "20",
+  "D2" = "19",
+  "D3" = "18",
+  "D4" = "17",
+  "D5" = "16", 
+  "E1" = "15",
+  "E2" = "14",
+  "E3" = "13",
+  "E4" = "12",
+  "E5" = "11",
+  "F1" = "10",
+  "F2" = "9",
+  "F3" = "8",
+  "F4" = "7",
+  "F5" = "6",
+  "G1" = "5",
+  "G2" = "4",
+  "G3" = "3",
+  "G4" = "2",
+  "G5" = "1"
+  )) %>% 
+  as.numeric()
+
+
+
+
+
+
+loan["term"] <- lapply(loan["term"], gsub, pattern = "36", replacement = "0")
+
+
+
+
+
+
+
+pattern
+
+
+loan$term  -plyr::revalue(as.character(loan$term), c(
+  "36" = "0",
+  "60" = "1"
+)) %>% as.numeric()
+```
